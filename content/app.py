@@ -2,6 +2,7 @@ from flask import Flask, request, redirect, make_response
 import sqlite3
 import urllib
 import quoter_templates as templates
+import html
 
 # Run using `poetry install && poetry run flask run --reload`
 app = Flask(__name__)
@@ -33,7 +34,10 @@ def check_authentication():
 @app.route("/")
 def index():
     quotes = db.execute("select id, text, attribution from quotes order by id").fetchall()
-    return templates.main_page(quotes, request.user_id, request.args.get('error'))
+    raw_error = request.args.get('error')
+    safe_error = html.escape(raw_error) if raw_error else None
+    
+    return templates.main_page(quotes, request.user_id, safe_error)
 
 
 # The quote comments page
