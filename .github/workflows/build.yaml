@@ -83,3 +83,14 @@ jobs:
               sudo kubectl delete deployment --all              
               sudo kubectl apply -f ${{ github.workspace }}/kubernetes/deployment.yaml --force
               sudo kubectl apply -f ${{ github.workspace }}/kubernetes/nginx-service.yaml --force
+
+  postman_testing:
+    name: Automated API tests using Postman CLI
+    needs: [ deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Postman Collection
+        uses: postmanlabs/postman-cli-action@v1
+        with:
+          command: 'collection run 1c420f6e-9742-4b3d-a394-449ddbfd5cc1'
+          api-key: ${{ secrets.POSTMAN_API_KEY }}
